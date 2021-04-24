@@ -1,0 +1,39 @@
+{
+  "name": "gars-utils",
+  "version": "0.0.1",
+  "description": "A TypeScript-based utility to convert between Lat/Long and GARS",
+  "main": "build/gars-utils.js",
+  "types": "build/gars-utils.d.ts",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier --write .",
+    "test": "jest --config jest.json --forceExit",
+    "test:coverage": "jest --config jest.json --forceExit --coverage --no-cache"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dnlbaldwin/GARS-utils.git"
+  },
+  "keywords": [
+    "GARS"
+  ],
+  "author": "Dan Baldwin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dnlbaldwin/GARS-utils/issues"
+  },
+  "homepage": "https://github.com/dnlbaldwin/GARS-utils#readme",
+  "devDependencies": {
+    "@types/jest": "^26.0.22",
+    "eslint": "^7.25.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "jest": "^26.6.3",
+    "prettier": "^2.2.1",
+    "ts-jest": "^26.5.5",
+    "typescript": "^4.2.4"
+  }
+}
