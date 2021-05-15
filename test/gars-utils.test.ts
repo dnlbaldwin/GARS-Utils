@@ -3,12 +3,56 @@ import { llToGars, garsToCenterLl, garsToCornerLl, getGarsLetters, getGarsNumber
 
 describe('LL to GARS', () => {
   it('Should return the proper five-minute coordinate', () => {
+    const ONE_TWENTY_FOURTH_DEGREE = 1 / 24;
+    const THREE_TWENTY_FOURTH_DEGREE = 3 / 24;
+    const FIVE_TWENTY_FOURTH_DEGREE = 5 / 24;
+
     const llInputs = [
       //
       { lat: -90, lng: -180 },
       { lat: 90, lng: -180 },
       { lat: -90, lng: 180 },
       { lat: 90, lng: 180 },
+      //
+      { lat: -90 + ONE_TWENTY_FOURTH_DEGREE, lng: -180 + ONE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + THREE_TWENTY_FOURTH_DEGREE, lng: -180 + ONE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + FIVE_TWENTY_FOURTH_DEGREE, lng: -180 + ONE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + ONE_TWENTY_FOURTH_DEGREE, lng: -180 + THREE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + THREE_TWENTY_FOURTH_DEGREE, lng: -180 + THREE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + FIVE_TWENTY_FOURTH_DEGREE, lng: -180 + THREE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + ONE_TWENTY_FOURTH_DEGREE, lng: -180 + FIVE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + THREE_TWENTY_FOURTH_DEGREE, lng: -180 + FIVE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + FIVE_TWENTY_FOURTH_DEGREE, lng: -180 + FIVE_TWENTY_FOURTH_DEGREE },
+      //
+      { lat: 90 - ONE_TWENTY_FOURTH_DEGREE, lng: -180 + ONE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - THREE_TWENTY_FOURTH_DEGREE, lng: -180 + ONE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - FIVE_TWENTY_FOURTH_DEGREE, lng: -180 + ONE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - ONE_TWENTY_FOURTH_DEGREE, lng: -180 + THREE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - THREE_TWENTY_FOURTH_DEGREE, lng: -180 + THREE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - FIVE_TWENTY_FOURTH_DEGREE, lng: -180 + THREE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - ONE_TWENTY_FOURTH_DEGREE, lng: -180 + FIVE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - THREE_TWENTY_FOURTH_DEGREE, lng: -180 + FIVE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - FIVE_TWENTY_FOURTH_DEGREE, lng: -180 + FIVE_TWENTY_FOURTH_DEGREE },
+      //
+      { lat: -90 + ONE_TWENTY_FOURTH_DEGREE, lng: 180 - ONE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + THREE_TWENTY_FOURTH_DEGREE, lng: 180 - ONE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + FIVE_TWENTY_FOURTH_DEGREE, lng: 180 - ONE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + ONE_TWENTY_FOURTH_DEGREE, lng: 180 - THREE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + THREE_TWENTY_FOURTH_DEGREE, lng: 180 - THREE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + FIVE_TWENTY_FOURTH_DEGREE, lng: 180 - THREE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + ONE_TWENTY_FOURTH_DEGREE, lng: 180 - FIVE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + THREE_TWENTY_FOURTH_DEGREE, lng: 180 - FIVE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + FIVE_TWENTY_FOURTH_DEGREE, lng: 180 - FIVE_TWENTY_FOURTH_DEGREE },
+      //
+      { lat: 90 - ONE_TWENTY_FOURTH_DEGREE, lng: 180 - ONE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - THREE_TWENTY_FOURTH_DEGREE, lng: 180 - ONE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - FIVE_TWENTY_FOURTH_DEGREE, lng: 180 - ONE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - ONE_TWENTY_FOURTH_DEGREE, lng: 180 - THREE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - THREE_TWENTY_FOURTH_DEGREE, lng: 180 - THREE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - FIVE_TWENTY_FOURTH_DEGREE, lng: 180 - THREE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - ONE_TWENTY_FOURTH_DEGREE, lng: 180 - FIVE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - THREE_TWENTY_FOURTH_DEGREE, lng: 180 - FIVE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - FIVE_TWENTY_FOURTH_DEGREE, lng: 180 - FIVE_TWENTY_FOURTH_DEGREE },
     ];
 
     const expectedResults = [
@@ -17,6 +61,46 @@ describe('LL to GARS', () => {
       '001QZ11',
       '720AA49',
       '720QZ23',
+      //
+      '001AA37',
+      '001AA34',
+      '001AA31',
+      '001AA38',
+      '001AA35',
+      '001AA32',
+      '001AA39',
+      '001AA36',
+      '001AA33',
+      //
+      '001QZ11',
+      '001QZ14',
+      '001QZ17',
+      '001QZ12',
+      '001QZ15',
+      '001QZ18',
+      '001QZ13',
+      '001QZ16',
+      '001QZ19',
+      //
+      '720AA49',
+      '720AA46',
+      '720AA43',
+      '720AA48',
+      '720AA45',
+      '720AA42',
+      '720AA47',
+      '720AA44',
+      '720AA41',
+      //
+      '720QZ23',
+      '720QZ26',
+      '720QZ29',
+      '720QZ22',
+      '720QZ25',
+      '720QZ28',
+      '720QZ21',
+      '720QZ24',
+      '720QZ27',
     ];
 
     llInputs.forEach((el, idx) => {
@@ -35,12 +119,12 @@ describe('LL to GARS', () => {
       { lat: 89.875, lng: 179.625 },
       { lat: 89.625, lng: 179.875 },
       { lat: 89.875, lng: 179.875 },
-      // TODO Confirm
+      //
       { lat: -60, lng: -180 },
       { lat: 60, lng: -180 },
       { lat: -60, lng: 180 },
       { lat: 60, lng: 180 },
-      // TODO Confirm
+      //
       { lat: -90, lng: -120 },
       { lat: 90, lng: -120 },
       { lat: -90, lng: 120 },

@@ -11,6 +11,7 @@
     "build": "tsc",
     "format": "prettier --write .",
     "test": "jest --config jest.json --forceExit",
+    "watch-test": "jest --config jest.json --forceExit --watch",
     "test:coverage": "jest --config jest.json --forceExit --coverage --no-cache"
   },
   "repository": {
