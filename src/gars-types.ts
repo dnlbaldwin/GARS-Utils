@@ -35,4 +35,9 @@ const GarsLetters = [
   'Z',
 ];
 
-export { GarsLetters, GarsPrecision };
+interface LatLng {
+  lat: number;
+  lng: number;
+}
+
+export { GarsLetters, GarsPrecision, LatLng };

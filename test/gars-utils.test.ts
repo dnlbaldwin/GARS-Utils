@@ -1,5 +1,5 @@
 import { GarsLetters, GarsPrecision } from '../src/gars-types';
-import { llToGars, garsToCenterLl, garsToCornerLl, getGarsLetters, getGarsNumbers } from '../src/gars-utils';
+import { llToGars, garsToCenterLl, garsToCornerLl } from '../src/gars-utils';
 
 describe('LL to GARS', () => {
   it('Should return the proper five-minute coordinate', () => {
@@ -205,41 +205,185 @@ describe('GARS to centre LL', () => {});
 
 describe('GARS to corner LL', () => {});
 
-describe('Get GARS letters', () => {
-  it('Should return the proper letter over the entire range', () => {
-    let lat = -90;
-    GarsLetters.forEach((firstLetter) => {
-      GarsLetters.forEach((secondLetter) => {
-        if (lat < 90) {
-          expect(getGarsLetters(lat)).toBe(firstLetter + secondLetter);
-          lat += 0.5;
-        } else if (lat === 90) {
-          expect(getGarsLetters(lat)).toBe('QZ');
-        }
-      });
+describe('GARS to center LL', () => {
+  it('Convert 30 minute GARS to LL', () => {
+    const input = [
+      '001AA',
+      '001QZ',
+      '720AA',
+      '720QZ',
+      //
+      '002AB',
+      '002QY',
+      '719AB',
+      '719QY',
+    ];
+    const expectedResults = [
+      { lat: -89.75, lng: -179.75 },
+      { lat: 89.75, lng: -179.75 },
+      { lat: -89.75, lng: 179.75 },
+      { lat: 89.75, lng: 179.75 },
+      //
+      { lat: -89.25, lng: -179.25 },
+      { lat: 89.25, lng: -179.25 },
+      { lat: -89.25, lng: 179.25 },
+      { lat: 89.25, lng: 179.25 },
+    ];
+    input.forEach((el, idx) => {
+      expect(garsToCenterLl(el)).toStrictEqual(expectedResults[idx]);
     });
   });
 
-  it('Should except for out of range values', () => {});
-});
+  it('Convert 15 minute GARS to LL', () => {
+    const input = [
+      '001AA1',
+      '001AA2',
+      '001AA3',
+      '001AA4',
+      //
+      '001QZ1',
+      '001QZ2',
+      '001QZ3',
+      '001QZ4',
+      //
+      '720AA1',
+      '720AA2',
+      '720AA3',
+      '720AA4',
+      //
+      '720QZ1',
+      '720QZ2',
+      '720QZ3',
+      '720QZ4',
+      //
+      '002AB1',
+      '002QY2',
+      '719AB3',
+      '719QY4',
+    ];
+    const expectedResults = [
+      { lat: -89.625, lng: -179.875 },
+      { lat: -89.625, lng: -179.625 },
+      { lat: -89.875, lng: -179.875 },
+      { lat: -89.875, lng: -179.625 },
+      //
+      { lat: 89.875, lng: -179.875 },
+      { lat: 89.875, lng: -179.625 },
+      { lat: 89.625, lng: -179.875 },
+      { lat: 89.625, lng: -179.625 },
+      //
+      { lat: -89.625, lng: 179.625 },
+      { lat: -89.625, lng: 179.875 },
+      { lat: -89.875, lng: 179.625 },
+      { lat: -89.875, lng: 179.875 },
+      //
+      { lat: 89.875, lng: 179.625 },
+      { lat: 89.875, lng: 179.875 },
+      { lat: 89.625, lng: 179.625 },
+      { lat: 89.625, lng: 179.875 },
+      //
+      { lat: -89.125, lng: -179.375 },
+      { lat: 89.375, lng: -179.125 },
+      { lat: -89.375, lng: 179.125 },
+      { lat: 89.125, lng: 179.375 },
+    ];
 
-describe('Get GARS numbers', () => {
-  it('Should return the proper numbers over the entire range', () => {
-    let lng = -180;
-    let zone = 1;
-    while (lng <= 180) {
-      if (lng === 180) {
-        expect(getGarsNumbers(lng)).toBe('720');
-      } else {
-        let res = zone.toString();
-        while (res.length < 3) {
-          res = '0' + res;
-        }
-        expect(getGarsNumbers(lng)).toBe(res);
-      }
-      zone += 1;
-      lng += 0.5;
-    }
+    input.forEach((el, idx) => {
+      expect(garsToCenterLl(el)).toStrictEqual(expectedResults[idx]);
+    });
   });
-  it('Should normalize to -180/+180 degrees', () => {});
+
+  it('Convert 5 minute GARS to LL', () => {
+    const ONE_TWENTY_FOURTH_DEGREE = 1 / 24;
+    const THREE_TWENTY_FOURTH_DEGREE = 3 / 24;
+    const FIVE_TWENTY_FOURTH_DEGREE = 5 / 24;
+
+    const inputs = [
+      '001AA37',
+      '001AA34',
+      '001AA31',
+      '001AA38',
+      '001AA35',
+      '001AA32',
+      '001AA39',
+      '001AA36',
+      '001AA33',
+      //
+      '001QZ11',
+      '001QZ14',
+      '001QZ17',
+      '001QZ12',
+      '001QZ15',
+      '001QZ18',
+      '001QZ13',
+      '001QZ16',
+      '001QZ19',
+      //
+      '720AA49',
+      '720AA46',
+      '720AA43',
+      '720AA48',
+      '720AA45',
+      '720AA42',
+      '720AA47',
+      '720AA44',
+      '720AA41',
+      //
+      '720QZ23',
+      '720QZ26',
+      '720QZ29',
+      '720QZ22',
+      '720QZ25',
+      '720QZ28',
+      '720QZ21',
+      '720QZ24',
+      '720QZ27',
+    ];
+
+    const expectedResults = [
+      { lat: -90 + ONE_TWENTY_FOURTH_DEGREE, lng: -180 + ONE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + THREE_TWENTY_FOURTH_DEGREE, lng: -180 + ONE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + FIVE_TWENTY_FOURTH_DEGREE, lng: -180 + ONE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + ONE_TWENTY_FOURTH_DEGREE, lng: -180 + THREE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + THREE_TWENTY_FOURTH_DEGREE, lng: -180 + THREE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + FIVE_TWENTY_FOURTH_DEGREE, lng: -180 + THREE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + ONE_TWENTY_FOURTH_DEGREE, lng: -180 + FIVE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + THREE_TWENTY_FOURTH_DEGREE, lng: -180 + FIVE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + FIVE_TWENTY_FOURTH_DEGREE, lng: -180 + FIVE_TWENTY_FOURTH_DEGREE },
+      //
+      { lat: 90 - ONE_TWENTY_FOURTH_DEGREE, lng: -180 + ONE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - THREE_TWENTY_FOURTH_DEGREE, lng: -180 + ONE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - FIVE_TWENTY_FOURTH_DEGREE, lng: -180 + ONE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - ONE_TWENTY_FOURTH_DEGREE, lng: -180 + THREE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - THREE_TWENTY_FOURTH_DEGREE, lng: -180 + THREE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - FIVE_TWENTY_FOURTH_DEGREE, lng: -180 + THREE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - ONE_TWENTY_FOURTH_DEGREE, lng: -180 + FIVE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - THREE_TWENTY_FOURTH_DEGREE, lng: -180 + FIVE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - FIVE_TWENTY_FOURTH_DEGREE, lng: -180 + FIVE_TWENTY_FOURTH_DEGREE },
+      //
+      { lat: -90 + ONE_TWENTY_FOURTH_DEGREE, lng: 180 - ONE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + THREE_TWENTY_FOURTH_DEGREE, lng: 180 - ONE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + FIVE_TWENTY_FOURTH_DEGREE, lng: 180 - ONE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + ONE_TWENTY_FOURTH_DEGREE, lng: 180 - THREE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + THREE_TWENTY_FOURTH_DEGREE, lng: 180 - THREE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + FIVE_TWENTY_FOURTH_DEGREE, lng: 180 - THREE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + ONE_TWENTY_FOURTH_DEGREE, lng: 180 - FIVE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + THREE_TWENTY_FOURTH_DEGREE, lng: 180 - FIVE_TWENTY_FOURTH_DEGREE },
+      { lat: -90 + FIVE_TWENTY_FOURTH_DEGREE, lng: 180 - FIVE_TWENTY_FOURTH_DEGREE },
+      //
+      { lat: 90 - ONE_TWENTY_FOURTH_DEGREE, lng: 180 - ONE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - THREE_TWENTY_FOURTH_DEGREE, lng: 180 - ONE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - FIVE_TWENTY_FOURTH_DEGREE, lng: 180 - ONE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - ONE_TWENTY_FOURTH_DEGREE, lng: 180 - THREE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - THREE_TWENTY_FOURTH_DEGREE, lng: 180 - THREE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - FIVE_TWENTY_FOURTH_DEGREE, lng: 180 - THREE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - ONE_TWENTY_FOURTH_DEGREE, lng: 180 - FIVE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - THREE_TWENTY_FOURTH_DEGREE, lng: 180 - FIVE_TWENTY_FOURTH_DEGREE },
+      { lat: 90 - FIVE_TWENTY_FOURTH_DEGREE, lng: 180 - FIVE_TWENTY_FOURTH_DEGREE },
+    ];
+
+    inputs.forEach((el, idx) => {
+      expect(garsToCenterLl(el)).toStrictEqual(expectedResults[idx]);
+    });
+  });
 });

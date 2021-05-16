@@ -1,8 +1,6 @@
-import { GarsLetters, GarsPrecision } from './gars-types';
-interface LatLng {
-  lat: number;
-  lng: number;
-}
+import { GarsLetters, GarsPrecision, LatLng } from './gars-types';
+
+const QUARTER_DEGREE = 0.25;
 
 /**
  *
@@ -38,7 +36,6 @@ function _getQuadrant(ll: LatLng) {
 }
 
 function _getKeypad(ll: LatLng) {
-  const QUARTER_DEGREE = 0.25;
   const latitude = Math.abs(ll.lat) === 90 ? 89.75 : ll.lat;
   const longitude = Math.abs(ll.lng) === 180 ? 179.75 : ll.lng;
 
@@ -84,9 +81,9 @@ function _getKeypad(ll: LatLng) {
 function llToGars(ll: LatLng, precision: GarsPrecision) {
   //TODO Normalize to -180/+180 degrees longitude
 
-  const lngBand = getGarsNumbers(ll.lng);
+  const lngBand = _getGarsNumbers(ll.lng);
 
-  const latBand = getGarsLetters(ll.lat);
+  const latBand = _getGarsLetters(ll.lat);
 
   if (precision === GarsPrecision.ThirtyMinutes) {
     return lngBand + latBand;
@@ -104,16 +101,87 @@ function llToGars(ll: LatLng, precision: GarsPrecision) {
   }
 }
 
-function garsToCornerLl(gars: any) {}
+function _validateGars(gars: string) {
+  const GARS_REGEX = new RegExp(/^([0-7][0-9]{2})([a-qA-Q][a-zA-Z])?([1-4])?([1-9])?/);
 
-function garsToCenterLl(gars: any) {}
+  const descructuredGars = GARS_REGEX.exec(gars);
+
+  if (!descructuredGars) {
+    throw new Error('Nothing extracted from GARS regexp! Input: ' + gars);
+  }
+  const longitudeBand = descructuredGars[1] ? descructuredGars[1] : '';
+  const latitudeBand = descructuredGars[2] ? descructuredGars[2] : '';
+
+  if (!longitudeBand || !latitudeBand) {
+    throw new Error('No valid GARS lat/lng bands detected! Input:' + gars);
+  }
+  const quadrant = descructuredGars[3] ? descructuredGars[3] : '';
+  const keypad = descructuredGars[4] ? descructuredGars[4] : '';
+
+  return [longitudeBand, latitudeBand, quadrant, keypad];
+}
+
+function garsToCornerLl(gars: string) {
+  const [longitudeBand, latitudeBand, quadrant, keypad] = _validateGars(gars);
+}
+
+function garsToCenterLl(gars: string) {
+  const [longitudeBand, latitudeBand, quadrant, keypad] = _validateGars(gars);
+
+  // The base value for a 30 minute cell
+  let result = { lat: getBaseLatitudeFromGars(latitudeBand), lng: getBaseLongitudeFromGars(longitudeBand) };
+
+  if (quadrant) {
+    if (quadrant === '1') {
+      result.lat += 0.125;
+      result.lng -= 0.125;
+    } else if (quadrant === '2') {
+      result.lat += 0.125;
+      result.lng += 0.125;
+    } else if (quadrant === '3') {
+      result.lat -= 0.125;
+      result.lng -= 0.125;
+    } else {
+      result.lat -= 0.125;
+      result.lng += 0.125;
+    }
+
+    if (keypad) {
+      const ONE_TWELFTH_DEGREE = 1 / 12;
+      if (keypad === '1') {
+        result.lat += ONE_TWELFTH_DEGREE;
+        result.lng -= ONE_TWELFTH_DEGREE;
+      } else if (keypad === '2') {
+        result.lat += ONE_TWELFTH_DEGREE;
+      } else if (keypad === '3') {
+        result.lat += ONE_TWELFTH_DEGREE;
+        result.lng += ONE_TWELFTH_DEGREE;
+      } else if (keypad === '4') {
+        result.lng -= ONE_TWELFTH_DEGREE;
+      } else if (keypad === '5') {
+        // no-op - already on target
+      } else if (keypad === '6') {
+        result.lng += ONE_TWELFTH_DEGREE;
+      } else if (keypad === '7') {
+        result.lat -= ONE_TWELFTH_DEGREE;
+        result.lng -= ONE_TWELFTH_DEGREE;
+      } else if (keypad === '8') {
+        result.lat -= ONE_TWELFTH_DEGREE;
+      } else {
+        result.lat -= ONE_TWELFTH_DEGREE;
+        result.lng += ONE_TWELFTH_DEGREE;
+      }
+    }
+  }
+  return result;
+}
 
 /**
  * This function returns the GARS latitude string for a given latitude
  * @param {number} lat - Latitude
  * @returns {string} - GARS Latitude letters
  */
-function getGarsLetters(lat: number): string {
+function _getGarsLetters(lat: number): string {
   // Algorithm calculates letters above latitude, since 90 is the max latitude,
   // short circuit the return value
   if (lat === 90) {
@@ -136,7 +204,7 @@ function getGarsLetters(lat: number): string {
  * @param {number} lng - Longitude
  * @returns {string} - A GARS longitude string
  */
-function getGarsNumbers(lng: number): string {
+function _getGarsNumbers(lng: number): string {
   //TODO Normalize to -180/+180 degrees
   if (lng === 180) {
     return '720';
@@ -157,4 +225,37 @@ function getGarsNumbers(lng: number): string {
   }
 }
 
-export { llToGars, garsToCenterLl, garsToCornerLl, getGarsLetters, getGarsNumbers };
+function getBaseLatitudeFromGars(garsLetters: string): number {
+  if (garsLetters.length > 2 || garsLetters.length < 2) {
+    throw new RangeError('GARS Latitude indicator strings must be two characters!');
+  }
+
+  const charArray = Array.from(garsLetters);
+
+  const indexOfFirstChar = GarsLetters.indexOf(charArray[0]);
+  const indexOfSecondChar = GarsLetters.indexOf(charArray[1]);
+
+  if (indexOfFirstChar > GarsLetters.indexOf('Q')) {
+    throw new RangeError('Invalid GARS value detected.  Max value is QZ, got: ' + garsLetters);
+  }
+
+  const DEGREES_PER_LETTER = 0.5;
+
+  return -90 + DEGREES_PER_LETTER * (indexOfFirstChar * GarsLetters.length + indexOfSecondChar) + QUARTER_DEGREE;
+}
+
+function getBaseLongitudeFromGars(garsNumbers: string): number {
+  if (garsNumbers.length > 3 || garsNumbers.length < 3) {
+    throw new RangeError('GARS Longitude indicator strings must be three characters');
+  }
+
+  const result = -180 + parseInt(garsNumbers) / 2 - 0.5;
+
+  if (result < -180 || result >= 180) {
+    throw new RangeError('Invalid GARS value received: ' + garsNumbers);
+  } else {
+    return result + QUARTER_DEGREE;
+  }
+}
+
+export { llToGars, garsToCenterLl, garsToCornerLl };
