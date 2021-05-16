@@ -1,4 +1,4 @@
-import { GarsLetters, GarsPrecision } from '../src/gars-types';
+import { GarsPrecision } from '../src/gars-types';
 import { llToGars, garsToCenterLl, garsToCornerLl } from '../src/gars-utils';
 
 describe('LL to GARS', () => {
@@ -201,9 +201,154 @@ describe('LL to GARS', () => {
   });
 });
 
-describe('GARS to centre LL', () => {});
+describe('GARS to corner LL', () => {
+  it('Convert 30 minute GARS to LL corners', () => {
+    const inputs = ['001AA', '001QZ', '720AA', '720QZ'];
 
-describe('GARS to corner LL', () => {});
+    const expectedResults = [
+      [
+        { lat: -89.5, lng: -180 },
+        { lat: -89.5, lng: -179.5 },
+        { lat: -90, lng: -179.5 },
+        { lat: -90, lng: -180 },
+      ],
+      [
+        { lat: 90, lng: -180 },
+        { lat: 90, lng: -179.5 },
+        { lat: 89.5, lng: -179.5 },
+        { lat: 89.5, lng: -180 },
+      ],
+      [
+        { lat: -89.5, lng: 179.5 },
+        { lat: -89.5, lng: 180 },
+        { lat: -90, lng: 180 },
+        { lat: -90, lng: 179.5 },
+      ],
+      [
+        { lat: 90, lng: 179.5 },
+        { lat: 90, lng: 180 },
+        { lat: 89.5, lng: 180 },
+        { lat: 89.5, lng: 179.5 },
+      ],
+    ];
+
+    inputs.forEach((el, idx) => {
+      expect(garsToCornerLl(el)).toStrictEqual(expectedResults[idx]);
+    });
+  });
+
+  it('Convert 15 minute GARS to LL corners', () => {
+    const inputs = ['002AB1', '002QY2', '719AB3', '719QY4'];
+
+    const expectedResults = [
+      [
+        { lat: -89, lng: -179.5 },
+        { lat: -89, lng: -179.25 },
+        { lat: -89.25, lng: -179.25 },
+        { lat: -89.25, lng: -179.5 },
+      ],
+      [
+        { lat: 89.5, lng: -179.25 },
+        { lat: 89.5, lng: -179 },
+        { lat: 89.25, lng: -179 },
+        { lat: 89.25, lng: -179.25 },
+      ],
+      [
+        { lat: -89.25, lng: 179 },
+        { lat: -89.25, lng: 179.25 },
+        { lat: -89.5, lng: 179.25 },
+        { lat: -89.5, lng: 179 },
+      ],
+      [
+        { lat: 89.25, lng: 179.25 },
+        { lat: 89.25, lng: 179.5 },
+        { lat: 89, lng: 179.5 },
+        { lat: 89, lng: 179.25 },
+      ],
+    ];
+
+    inputs.forEach((el, idx) => {
+      expect(garsToCornerLl(el)).toStrictEqual(expectedResults[idx]);
+    });
+  });
+
+  it('Convert 5 minute GARS to LL corners', () => {
+    const ONE_TWELFTH_DEGREE = 1 / 12;
+    const TWO_TWELFTH_DEGREE = 2 / 12;
+    const inputs = ['001AA37', '001AA34', '001AA31', '001AA38', '001AA35', '001AA32', '001AA39', '001AA36', '001AA33'];
+
+    const expectedResults = [
+      [
+        { lat: -90 + ONE_TWELFTH_DEGREE, lng: -180 },
+        { lat: -90 + ONE_TWELFTH_DEGREE, lng: -180 + ONE_TWELFTH_DEGREE },
+        { lat: -90, lng: -180 + ONE_TWELFTH_DEGREE },
+        { lat: -90, lng: -180 },
+      ],
+      [
+        { lat: -90 + TWO_TWELFTH_DEGREE, lng: -180 },
+        { lat: -90 + TWO_TWELFTH_DEGREE, lng: -180 + ONE_TWELFTH_DEGREE },
+        { lat: -90 + ONE_TWELFTH_DEGREE, lng: -180 + ONE_TWELFTH_DEGREE },
+        { lat: -90 + ONE_TWELFTH_DEGREE, lng: -180 },
+      ],
+      [
+        { lat: -89.75, lng: -180 },
+        { lat: -89.75, lng: -180 + ONE_TWELFTH_DEGREE },
+        { lat: -90 + TWO_TWELFTH_DEGREE, lng: -180 + ONE_TWELFTH_DEGREE },
+        { lat: -90 + TWO_TWELFTH_DEGREE, lng: -180 },
+      ],
+      [
+        { lat: -90 + ONE_TWELFTH_DEGREE, lng: -180 + ONE_TWELFTH_DEGREE },
+        { lat: -90 + ONE_TWELFTH_DEGREE, lng: -180 + TWO_TWELFTH_DEGREE },
+        { lat: -90, lng: -180 + TWO_TWELFTH_DEGREE },
+        { lat: -90, lng: -180 + ONE_TWELFTH_DEGREE },
+      ],
+      [
+        { lat: -90 + TWO_TWELFTH_DEGREE, lng: -180 + ONE_TWELFTH_DEGREE },
+        { lat: -90 + TWO_TWELFTH_DEGREE, lng: -180 + TWO_TWELFTH_DEGREE },
+        { lat: -90 + ONE_TWELFTH_DEGREE, lng: -180 + TWO_TWELFTH_DEGREE },
+        { lat: -90 + ONE_TWELFTH_DEGREE, lng: -180 + ONE_TWELFTH_DEGREE },
+      ],
+      [
+        { lat: -89.75, lng: -180 + ONE_TWELFTH_DEGREE },
+        { lat: -89.75, lng: -180 + TWO_TWELFTH_DEGREE },
+        { lat: -90 + TWO_TWELFTH_DEGREE, lng: -180 + TWO_TWELFTH_DEGREE },
+        { lat: -90 + TWO_TWELFTH_DEGREE, lng: -180 + ONE_TWELFTH_DEGREE },
+      ],
+      [
+        { lat: -90 + ONE_TWELFTH_DEGREE, lng: -180 + TWO_TWELFTH_DEGREE },
+        { lat: -90 + ONE_TWELFTH_DEGREE, lng: -179.75 },
+        { lat: -90, lng: -179.75 },
+        { lat: -90, lng: -180 + TWO_TWELFTH_DEGREE },
+      ],
+      [
+        { lat: -90 + TWO_TWELFTH_DEGREE, lng: -180 + TWO_TWELFTH_DEGREE },
+        { lat: -90 + TWO_TWELFTH_DEGREE, lng: -179.75 },
+        { lat: -90 + ONE_TWELFTH_DEGREE, lng: -179.75 },
+        { lat: -90 + ONE_TWELFTH_DEGREE, lng: -180 + TWO_TWELFTH_DEGREE },
+      ],
+      [
+        { lat: -89.75, lng: -180 + TWO_TWELFTH_DEGREE },
+        { lat: -89.75, lng: -179.75 },
+        { lat: -90 + TWO_TWELFTH_DEGREE, lng: -179.75 },
+        { lat: -90 + TWO_TWELFTH_DEGREE, lng: -180 + TWO_TWELFTH_DEGREE },
+      ],
+    ];
+
+    inputs.forEach((el, idx) => {
+      expect(garsToCornerLl(el)[0].lat).toBeCloseTo(expectedResults[idx][0].lat, 6);
+      expect(garsToCornerLl(el)[0].lng).toBeCloseTo(expectedResults[idx][0].lng, 6);
+
+      expect(garsToCornerLl(el)[1].lat).toBeCloseTo(expectedResults[idx][1].lat, 6);
+      expect(garsToCornerLl(el)[1].lng).toBeCloseTo(expectedResults[idx][1].lng, 6);
+
+      expect(garsToCornerLl(el)[2].lat).toBeCloseTo(expectedResults[idx][2].lat, 6);
+      expect(garsToCornerLl(el)[2].lng).toBeCloseTo(expectedResults[idx][2].lng, 6);
+
+      expect(garsToCornerLl(el)[3].lat).toBeCloseTo(expectedResults[idx][3].lat, 6);
+      expect(garsToCornerLl(el)[3].lng).toBeCloseTo(expectedResults[idx][3].lng, 6);
+    });
+  });
+});
 
 describe('GARS to center LL', () => {
   it('Convert 30 minute GARS to LL', () => {

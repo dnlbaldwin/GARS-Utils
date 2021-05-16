@@ -123,6 +123,22 @@ function _validateGars(gars: string) {
 
 function garsToCornerLl(gars: string) {
   const [longitudeBand, latitudeBand, quadrant, keypad] = _validateGars(gars);
+
+  const centerLl = garsToCenterLl(longitudeBand + latitudeBand + quadrant + keypad);
+  let halfCellSizeDegrees;
+  if (quadrant && keypad) {
+    halfCellSizeDegrees = 2.5 / 60;
+  } else if (quadrant && !keypad) {
+    halfCellSizeDegrees = 7.5 / 60;
+  } else {
+    halfCellSizeDegrees = 15 / 60;
+  }
+  return [
+    { lat: centerLl.lat + halfCellSizeDegrees, lng: centerLl.lng - halfCellSizeDegrees },
+    { lat: centerLl.lat + halfCellSizeDegrees, lng: centerLl.lng + halfCellSizeDegrees },
+    { lat: centerLl.lat - halfCellSizeDegrees, lng: centerLl.lng + halfCellSizeDegrees },
+    { lat: centerLl.lat - halfCellSizeDegrees, lng: centerLl.lng - halfCellSizeDegrees },
+  ];
 }
 
 function garsToCenterLl(gars: string) {
