@@ -102,7 +102,7 @@ function llToGars(ll: LatLng, precision: GarsPrecision) {
 
     return lngBand + latBand + quadrant + keypad;
   } else {
-    console.error('unknown precision detected: ' + precision);
+    return '';
   }
 }
 

@@ -2,8 +2,8 @@
   "name": "gars-utils",
   "version": "0.0.1",
   "description": "A TypeScript-based utility to convert between Lat/Long and GARS",
-  "main": "build/gars-utils.js",
-  "types": "build/gars-utils.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "directories": {
     "test": "test"
   },
