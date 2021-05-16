@@ -3,9 +3,9 @@ import { GarsLetters, GarsPrecision, LatLng } from './gars-types';
 const QUARTER_DEGREE = 0.25;
 
 /**
- *
- * @param {LatLng} ll - Lat/Lng dict.  Assumes that it has been normalized to -180/+180
- * @returns
+ * Takes a specified lat/lng and returns the quadrant it belongs to
+ * @param ll Supplied lat/lng
+ * @returns The quadrant the lat/lng belongs to
  */
 function _getQuadrant(ll: LatLng) {
   const HALF_DEGREE = 0.5; // The width of the 30 minute zone
@@ -35,6 +35,11 @@ function _getQuadrant(ll: LatLng) {
   }
 }
 
+/**
+ * Takes a specified lat/lng and returns the keypad it belongs to
+ * @param ll Supplied lat/lng
+ * @returns The keypad the lat/lng belongs to
+ */
 function _getKeypad(ll: LatLng) {
   const latitude = Math.abs(ll.lat) === 90 ? 89.75 : ll.lat;
   const longitude = Math.abs(ll.lng) === 180 ? 179.75 : ll.lng;
@@ -101,6 +106,13 @@ function llToGars(ll: LatLng, precision: GarsPrecision) {
   }
 }
 
+/**
+ * Takes a GARS value in string format and validates it via regexp
+ * @param gars A string representation of a GARS value
+ * @returns A destructured array of the GARS value
+ * @throws Error when nothing extracted from the GARS string
+ * @throws Error when no valid lat/lng bands are detected
+ */
 function _validateGars(gars: string) {
   const GARS_REGEX = new RegExp(/^([0-7][0-9]{2})([a-qA-Q][a-zA-Z])?([1-4])?([1-9])?/);
 
@@ -121,6 +133,11 @@ function _validateGars(gars: string) {
   return [longitudeBand, latitudeBand, quadrant, keypad];
 }
 
+/**
+ * Takes a GARS value and finds the corner lat/lng values for the cell
+ * @param gars A GARS value in string format
+ * @returns An array lat/lng values of the corner verticies for the GARS cell
+ */
 function garsToCornerLl(gars: string) {
   const [longitudeBand, latitudeBand, quadrant, keypad] = _validateGars(gars);
 
@@ -141,6 +158,11 @@ function garsToCornerLl(gars: string) {
   ];
 }
 
+/**
+ * Takes a GARS value and finds the equivalent center lat/lng
+ * @param gars A GARS value in string format
+ * @returns The centre lat/lng of the GARS value
+ */
 function garsToCenterLl(gars: string) {
   const [longitudeBand, latitudeBand, quadrant, keypad] = _validateGars(gars);
 

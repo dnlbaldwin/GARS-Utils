@@ -1,6 +1,3 @@
-/**
- *
- */
 enum GarsPrecision {
   ThirtyMinutes,
   FifteenMinutes,
